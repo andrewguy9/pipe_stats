@@ -3,6 +3,8 @@
 
 #include<stdlib.h>
 
+typedef size_t (EnterpyRoutine)(void);
+
 template<class T>
 class ReservoirSample {
 	private:
@@ -10,13 +12,15 @@ class ReservoirSample {
 	T *Sample;
 	size_t Size;
 	size_t Inserted;
+	EnterpyRoutine * Rand;
 
 	public:
 
-	ReservoirSample(size_t size) :
+	ReservoirSample(size_t size, EnterpyRoutine * rand) :
 			Sample(new T[size]),
 			Size(size),
-			Inserted(0)
+			Inserted(0),
+			Rand(rand)
 	{ }
 	
 	~ReservoirSample() {
@@ -28,7 +32,7 @@ class ReservoirSample {
 		if(Inserted < Size) {
 			index = Inserted;
 		} else {
-			index = rand() % Inserted; //TODO Need to make uniform distrubition. 
+			index = Rand() % Inserted; //TODO Need to make uniform distrubition. 
 		}
 
 		if(index < Size) {

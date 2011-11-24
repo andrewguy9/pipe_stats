@@ -1,13 +1,31 @@
 #include <iostream>
+#include<stdlib.h>
+#include <sys/time.h>
 
 #include "RunningAverage.hpp"
 #include "RunningMax.hpp"
 #include "ReservoirSample.hpp"
 
+void initMyRand() {
+	struct timeval curTime;
+
+	gettimeofday(&curTime, NULL);
+
+	srand(curTime.tv_sec);
+}
+
+EnterpyRoutine myRand;
+size_t myRand() {
+	return rand();
+}
+
 int main(int argc, char ** argv) {
+
+	initMyRand();
+
 	RunningAverage avg;
 	RunningMax max;
-	ReservoirSample<size_t> sample(10);
+	ReservoirSample<size_t> sample(10, myRand);
 
 	do {
 		double val;
@@ -21,7 +39,6 @@ int main(int argc, char ** argv) {
 			return 1;
 		}
 
-		std::cout << "Read " << val << std::endl;
 		avg.Insert(val);
 		max.Insert(val);
 		sample.Insert(val);
