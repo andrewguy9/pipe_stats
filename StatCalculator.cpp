@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include<stdlib.h>
 #include <sys/time.h>
 
@@ -38,7 +39,7 @@ int main(int argc, char ** argv) {
 
 	RunningAverage avg;
 	RunningMax max;
-	const size_t sampleLength = 100;
+	const size_t sampleLength = 150;
 	ReservoirSample<size_t> sample(sampleLength, myRand);
 
 	do {
@@ -64,11 +65,19 @@ int main(int argc, char ** argv) {
 	size_t *data = sample.GetData();
 	qsort(data, sampleLength, sizeof(size_t), compare_size_t);
 	std::cout << "Sample Dump " << std::endl;
-	int percentiles[] = {10,20,30,40,50,60,70,80,90};
-	int numPercentiles = 9;
+	int percentiles[] = {10,20,30,40,50,60,70,80,90,95,96,97,98,99,100};
+	int numPercentiles = 15;
 	for(size_t percentile = 0; percentile < numPercentiles; percentile++) {
 		size_t index = (percentiles[percentile] * sampleLength) / 100;
-		std::cout << "\t" << percentiles[percentile] << "% " << data[index] << std::endl;
+		if(index >= sampleLength) {
+			index = sampleLength - 1;
+		}
+		size_t num = data[index];
+		std::cout << "\t" << std::setw(3) << percentiles[percentile] << "% ";
+		for(int star = 0; star < (num * 60) / max.Get(); star++) {
+			std::cout << "*";
+		}
+		std::cout << std::endl;
 	}
 	std::cout << "Sample Dump Done" << std::endl;
 
