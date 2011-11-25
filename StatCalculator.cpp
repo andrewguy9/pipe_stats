@@ -19,13 +19,27 @@ size_t myRand() {
 	return rand();
 }
 
+int compare_size_t(const void *va, const void *vb) {
+	const size_t *a = (size_t *) va;
+	const size_t *b = (size_t *) vb;
+
+	if(*a<*b) {
+		return -1;
+	} else if(*a==*b) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
 int main(int argc, char ** argv) {
 
 	initMyRand();
 
 	RunningAverage avg;
 	RunningMax max;
-	ReservoirSample<size_t> sample(10, myRand);
+	const size_t sampleLength = 100;
+	ReservoirSample<size_t> sample(sampleLength, myRand);
 
 	do {
 		double val;
@@ -48,9 +62,13 @@ int main(int argc, char ** argv) {
 	std::cout << "Max is " << max.Get() << std::endl;
 
 	size_t *data = sample.GetData();
+	qsort(data, sampleLength, sizeof(size_t), compare_size_t);
 	std::cout << "Sample Dump " << std::endl;
-	for(size_t index = 0; index < 10; index++) {
-		std::cout << "\t" << data[index] << std::endl;
+	int percentiles[] = {10,20,30,40,50,60,70,80,90};
+	int numPercentiles = 9;
+	for(size_t percentile = 0; percentile < numPercentiles; percentile++) {
+		size_t index = (percentiles[percentile] * sampleLength) / 100;
+		std::cout << "\t" << percentiles[percentile] << "% " << data[index] << std::endl;
 	}
 	std::cout << "Sample Dump Done" << std::endl;
 
