@@ -6,6 +6,7 @@
 #include "RunningAverage.hpp"
 #include "RunningMax.hpp"
 #include "ReservoirSample.hpp"
+#include "HeavyHitters.hpp"
 
 void initMyRand() {
 	struct timeval curTime;
@@ -55,6 +56,18 @@ void printHisogram(size_t *data, size_t sampleSize) {
 	std::cout << "Sample Dump Done" << std::endl;
 }
 
+void printExtensions(
+		std::map<std::string, double>::iterator begin, 
+		std::map<std::string, double>::iterator end) 
+{
+	std::cout << "Dumping Extensions" << std::endl;
+	std::map<std::string, double>::iterator cur = begin;
+	for(cur = begin; cur != end; ++cur) {
+		std::cout << "\t" << cur->first << "\t:\t" << cur->second << std::endl;
+	}
+	std::cout << "Dumping Extensions Done!" << std::endl;
+}
+
 int main(int argc, char ** argv) {
 
 	initMyRand();
@@ -63,10 +76,14 @@ int main(int argc, char ** argv) {
 	RunningMax max;
 	const size_t sampleSize = 1000;
 	ReservoirSample<size_t> sample(sampleSize, myRand);
+	HeavyHittersTracker hht(10);
 
 	do {
-		double val;
-		std::cin >> val;
+		double size;
+		std::string ext;
+
+		std::cin >> size;
+		std::cin >> ext;
 
 		if(std::cin.eof()) {
 			std::cout << "Done reading"<< std::endl;
@@ -76,14 +93,16 @@ int main(int argc, char ** argv) {
 			return 1;
 		}
 
-		avg.Insert(val);
-		max.Insert(val);
-		sample.Insert(val);
+		avg.Insert(size);
+		max.Insert(size);
+		sample.Insert(size);
+		hht.Update(ext, size);
 	} while(std::cin.good());
 
 	std::cout << "Avg is " << avg.Get() << std::endl;
 	std::cout << "Max is " << max.Get() << std::endl;
-
 	printHisogram(sample.GetData(), sampleSize);
+	printExtensions(hht.begin(), hht.end());
+	
 	return 0;
 }
