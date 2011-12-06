@@ -1,25 +1,11 @@
 #include <iostream>
 #include <iomanip>
-#include<stdlib.h>
-#include <sys/time.h>
 
 #include "RunningAverage.hpp"
 #include "RunningMax.hpp"
 #include "ReservoirSample.hpp"
 #include "HeavyHitters.hpp"
-
-void initMyRand() {
-	struct timeval curTime;
-
-	gettimeofday(&curTime, NULL);
-
-	srand(curTime.tv_sec);
-}
-
-EnterpyRoutine myRand;
-size_t myRand() {
-	return rand();
-}
+#include "EnterpySource.hpp"
 
 int compare_size_t(const void *va, const void *vb) {
 	const size_t *a = (size_t *) va;
@@ -71,12 +57,12 @@ void printHHT(
 
 int main(int argc, char ** argv) {
 
-	initMyRand();
+	EnterpySource enterpySource;
 
 	RunningAverage avg;
 	RunningMax max;
 	const size_t sampleSize = 1000;
-	ReservoirSample<size_t> sample(sampleSize, myRand);
+	ReservoirSample<size_t> sample(sampleSize, &enterpySource);
 	HeavyHittersTracker hhtSize(20);
 	HeavyHittersTracker hhtFiles(20);
 

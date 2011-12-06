@@ -2,8 +2,7 @@
 #define RESERVOIR_SAMPLE_HPP
 
 #include<stdlib.h>
-
-typedef size_t (EnterpyRoutine)(void);
+#include "EnterpySource.hpp"
 
 template<class T>
 class ReservoirSample {
@@ -12,11 +11,11 @@ class ReservoirSample {
 	T *Sample;
 	size_t Size;
 	size_t Inserted;
-	EnterpyRoutine * Rand;
+	EnterpySource * Rand;
 
 	public:
 
-	ReservoirSample(size_t size, EnterpyRoutine * rand) :
+	ReservoirSample(size_t size, EnterpySource * rand) :
 			Sample(new T[size]),
 			Size(size),
 			Inserted(0),
@@ -32,7 +31,7 @@ class ReservoirSample {
 		if(Inserted < Size) {
 			index = Inserted;
 		} else {
-			index = Rand() % Inserted; //TODO Need to make uniform distrubition. 
+			index = Rand->rand(0, Inserted);
 		}
 
 		if(index < Size) {
