@@ -76,7 +76,7 @@ int main(int argc, char ** argv) {
 	RunningMax max;
 	const size_t sampleSize = 1000;
 	ReservoirSample<size_t> sample(sampleSize, myRand);
-	HeavyHittersTracker hht(10);
+	HeavyHittersTracker hht(20);
 
 	do {
 		double size;
