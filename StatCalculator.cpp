@@ -56,16 +56,17 @@ void printHisogram(size_t *data, size_t sampleSize) {
 	std::cout << "Sample Dump Done" << std::endl;
 }
 
-void printExtensions(
+void printHHT(
 		std::map<std::string, double>::iterator begin, 
-		std::map<std::string, double>::iterator end) 
+		std::map<std::string, double>::iterator end,
+		std::string units) 
 {
-	std::cout << "Dumping Extensions" << std::endl;
+	std::cout << "Dumping " << units << std::endl;
 	std::map<std::string, double>::iterator cur = begin;
 	for(cur = begin; cur != end; ++cur) {
-		std::cout << "\t" << cur->first << "\t:\t" << cur->second << std::endl;
+		std::cout << "\t" << cur->first << "\t" << cur->second << " " << units << std::endl;
 	}
-	std::cout << "Dumping Extensions Done!" << std::endl;
+	std::cout << "Dumping Done!" << std::endl;
 }
 
 int main(int argc, char ** argv) {
@@ -76,7 +77,7 @@ int main(int argc, char ** argv) {
 	RunningMax max;
 	const size_t sampleSize = 1000;
 	ReservoirSample<size_t> sample(sampleSize, myRand);
-	HeavyHittersTracker hht(20);
+	HeavyHittersTracker hhtSize(20);
 
 	do {
 		double size;
@@ -96,13 +97,13 @@ int main(int argc, char ** argv) {
 		avg.Insert(size);
 		max.Insert(size);
 		sample.Insert(size);
-		hht.Update(ext, size);
+		hhtSize.Update(ext, ((double)size)/100000.0);
 	} while(std::cin.good());
 
 	std::cout << "Avg is " << avg.Get() << std::endl;
 	std::cout << "Max is " << max.Get() << std::endl;
 	printHisogram(sample.GetData(), sampleSize);
-	printExtensions(hht.begin(), hht.end());
+	printHHT(hhtSize.begin(), hhtSize.end(), "mb");
 	
 	return 0;
 }
