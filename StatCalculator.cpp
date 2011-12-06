@@ -78,6 +78,7 @@ int main(int argc, char ** argv) {
 	const size_t sampleSize = 1000;
 	ReservoirSample<size_t> sample(sampleSize, myRand);
 	HeavyHittersTracker hhtSize(20);
+	HeavyHittersTracker hhtFiles(20);
 
 	do {
 		double size;
@@ -98,12 +99,14 @@ int main(int argc, char ** argv) {
 		max.Insert(size);
 		sample.Insert(size);
 		hhtSize.Update(ext, ((double)size)/100000.0);
+		hhtFiles.Update(ext, 1);
 	} while(std::cin.good());
 
 	std::cout << "Avg is " << avg.Get() << std::endl;
 	std::cout << "Max is " << max.Get() << std::endl;
 	printHisogram(sample.GetData(), sampleSize);
 	printHHT(hhtSize.begin(), hhtSize.end(), "mb");
+	printHHT(hhtFiles.begin(), hhtFiles.end(), "Files");
 	
 	return 0;
 }
