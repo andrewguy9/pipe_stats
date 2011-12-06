@@ -1,5 +1,7 @@
 #!/bin/bash
-find . | 
+echo "Looking up $@"
+
+find $@ | 
 xargs -I {} -P1 ls -l {} | 
 grep -v total | 
 awk '{print $5,$9}' | 
