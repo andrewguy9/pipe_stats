@@ -1,7 +1,7 @@
 all: StatCalculator.out EnterpySourceTest.out
 
-StatCalculator.out: StatCalculator.o RunningAverage.o RunningMax.o ReservoirSample.o HeavyHitters.o EnterpySource.o
-	g++ StatCalculator.o RunningAverage.o RunningMax.o ReservoirSample.o HeavyHitters.o EnterpySource.o -o StatCalculator.out
+StatCalculator.out: StatCalculator.o RunningAverage.o RunningMax.o ReservoirSample.o HeavyHitters.o EnterpySource.o Histogram.o
+	g++ StatCalculator.o RunningAverage.o RunningMax.o ReservoirSample.o HeavyHitters.o EnterpySource.o -o StatCalculator.out Histogram.o
 
 EnterpySourceTest.out: EnterpySource.o EnterpySourceTest.o HeavyHitters.o
 	g++ EnterpySource.o EnterpySourceTest.o HeavyHitters.o -o EnterpySourceTest.out
@@ -26,6 +26,9 @@ EnterpySource.o: EnterpySource.cpp EnterpySource.hpp
 
 EnterpySourceTest.o: EnterpySourceTest.cpp
 	g++ -c EnterpySourceTest.cpp -o EnterpySourceTest.o
+
+Histogram.o: Histogram.cpp Histogram.hpp
+	g++ -c Histogram.cpp -o Histogram.o
 
 clean:
 	rm -f *.out *.o
