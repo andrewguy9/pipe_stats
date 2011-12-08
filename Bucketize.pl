@@ -41,7 +41,7 @@ while(<>) {
 		$high++;
 	} else {
 		for my $i (@bins) {
-			if ($value > $i) {
+			if ($value <= $i) {
 				$counts[$i]++;
 				last;
 			}
