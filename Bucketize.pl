@@ -23,7 +23,7 @@ die "from must be lower than to" unless $from < $to;
 
 my $step = ($to - $from) / $num_bins;
 my @bins;
-for my $i (0 .. $num_bins) {
+for my $i (0 .. $num_bins - 1) {
 	push @bins, ($i * $step) + $from;
 }
 
