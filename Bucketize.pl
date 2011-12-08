@@ -33,6 +33,11 @@ for my $i (@bins) {
 }
 
 while(<>) {
+	chomp;
+	if ($_ eq "") {
+		next;
+	}
+
 	my $value = $_;
 	
 	if ($value < $bins[0]) {
