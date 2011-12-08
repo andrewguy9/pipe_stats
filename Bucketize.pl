@@ -19,6 +19,8 @@ die "from must be provided" unless defined $from;
 die "die must be provided" unless defined $to;
 die "bins must be provided" unless defined $num_bins;
 
+die "from must be lower than to" unless $from < $to;
+
 my $step = ($to - $from) / $num_bins;
 my @bins;
 for my $i (0 .. $num_bins) {
