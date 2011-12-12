@@ -29,10 +29,13 @@ my $bucket_width_max = 0;
 my $n = 0;
 my $sum = 0;
 while(<>) {
-	chomp;
 
 	my $line = $_;
-	(my $bucket, my $value) = split /\s/, $line;
+	chomp $line;
+	$line =~ s/^\s+//;
+	$line =~ s/\s+$//;
+
+	(my $value, my $bucket) = split /\s/, $line;
 	push @buckets, $bucket;
 	push @values, $value;
 
