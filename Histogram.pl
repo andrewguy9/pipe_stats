@@ -2,8 +2,23 @@
 use strict;
 use warnings;
 
-use List::Util qw[max];
+use List::Util qw[min max];
+use Getopt::Long;
 
+my $line_width;
+my $bucket_width;
+my $star_width;
+
+# Collect Options
+GetOptions(
+	"width=i" => \$line_width,
+	"bwidth=i" => \$bucket_width,
+) or die "Invalid input: $!";
+
+# Sanity Check
+my $terminal_width = `tput cols`;
+
+# Gather buckets from STDIN
 my %buckets;
 
 my @buckets;
@@ -22,19 +37,26 @@ while(<>) {
 	$n++;
 }
 
+# Compute Results
 my $max_value = max(@values);
 
-my $stars_width_max = `tput cols` - $bucket_width_max - 1;
+# Determine output dimensions
+$line_width = $terminal_width unless defined $line_width;
+$bucket_width = min($bucket_width_max, $line_width / 2) unless defined $bucket_width;
+my $line_spaces = 1;
+$star_width = $line_width - $bucket_width - $line_spaces;
 
+# Produce Output
+# Output format
+# <bucket> <stars>
 while(@buckets) {
 	my $bucket = shift @buckets;
 	my $value = shift @values;
-	my $percent = ($value / $n) * 100;
 
-	my $spaces = " " x ($bucket_width_max - length($bucket));
-	my $stars = "*" x int(($value/$max_value)*$stars_width_max);
+	$bucket = substr $bucket, 0, $bucket_width;
+	$bucket .= " " x ($bucket_width - length($bucket));
+	my $stars = "*" x int($star_width * ($value / $max_value));
 
-	print "$bucket $spaces$stars";
-	print "\n";
+	printf("%s %s\n", $bucket, $stars);
 }
 
