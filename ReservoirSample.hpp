@@ -44,6 +44,10 @@ class ReservoirSample {
         T* GetData() {
                 return Sample;
         }
+
+        size_t GetInserted() {
+                return Inserted;
+        }
 };
 
 #endif /* RESERVOIR_SAMPLE_HPP */
