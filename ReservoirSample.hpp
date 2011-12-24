@@ -36,8 +36,9 @@ class ReservoirSample {
 
                 if(index < Size) {
                         Sample[index] = data;
-                        Inserted++;
                 }
+
+                Inserted++;
         }
 
         T* GetData() {
