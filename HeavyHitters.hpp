@@ -7,86 +7,86 @@
 
 class HeavyHittersTracker {
 
-	private:
+        private:
 
-	size_t n_;
-	std::map<std::string, double> colorToValue_;
-	
-	public:
+        size_t n_;
+        std::map<std::string, double> colorToValue_;
 
-	HeavyHittersTracker(size_t n) :
-		n_(n),
-		colorToValue_()
-	{
-	}
+        public:
 
-	std::map<std::string, double>::iterator begin()
-	{
-		std::map<std::string, double>::iterator iterator;
-		iterator = colorToValue_.begin(); 
+        HeavyHittersTracker(size_t n) :
+                n_(n),
+                colorToValue_()
+        {
+        }
 
-		return iterator;
-	}
+        std::map<std::string, double>::iterator begin()
+        {
+                std::map<std::string, double>::iterator iterator;
+                iterator = colorToValue_.begin(); 
 
-	std::map<std::string, double>::iterator end()
-	{
-		std::map<std::string, double>::iterator iterator;
-		iterator = colorToValue_.end(); 
+                return iterator;
+        }
 
-		return iterator;
-	}
+        std::map<std::string, double>::iterator end()
+        {
+                std::map<std::string, double>::iterator iterator;
+                iterator = colorToValue_.end(); 
 
-	void Update(std::string c, double v) 
-	{
-		std::map<std::string, double>::iterator c_iterator;
-		c_iterator = colorToValue_.find(c);
+                return iterator;
+        }
 
-		if(c_iterator != colorToValue_.end()) {
+        void Update(std::string c, double v) 
+        {
+                std::map<std::string, double>::iterator c_iterator;
+                c_iterator = colorToValue_.find(c);
 
-			// Color already in map
-			double old_v = c_iterator->second;
-			colorToValue_.erase(c);
-			colorToValue_[c] = old_v + v;
-		} else {
-			// Color is not in map, add it.
+                if(c_iterator != colorToValue_.end()) {
 
-			if(colorToValue_.size() < n_) {
+                        // Color already in map
+                        double old_v = c_iterator->second;
+                        colorToValue_.erase(c);
+                        colorToValue_[c] = old_v + v;
+                } else {
+                        // Color is not in map, add it.
 
-				// Were not full, so just insert.
-				colorToValue_[c] = v;
-			} else {
-				// We are full, replace smallest.
-				std::string smallest_color = getSmallestColor();
-				double old_v = colorToValue_[smallest_color];
-				colorToValue_.erase(smallest_color);
-				colorToValue_[c] = old_v + v;
-			}
-		}
-	}
+                        if(colorToValue_.size() < n_) {
 
-	private:
+                                // Were not full, so just insert.
+                                colorToValue_[c] = v;
+                        } else {
+                                // We are full, replace smallest.
+                                std::string smallest_color = getSmallestColor();
+                                double old_v = colorToValue_[smallest_color];
+                                colorToValue_.erase(smallest_color);
+                                colorToValue_[c] = old_v + v;
+                        }
+                }
+        }
 
-	std::string getSmallestColor() 
-	{
-		std::string smallest_color;
-		double smallest_value;
+        private:
 
-		std::map<std::string, double>::iterator iterator;
-		iterator = colorToValue_.begin(); 
+        std::string getSmallestColor() 
+        {
+                std::string smallest_color;
+                double smallest_value;
 
-		smallest_color = iterator->first;
-		smallest_value = iterator->second;
-		++iterator;
+                std::map<std::string, double>::iterator iterator;
+                iterator = colorToValue_.begin(); 
 
-		while(iterator != colorToValue_.end()) {
-			if(smallest_value >= iterator->second) {
-				smallest_color = iterator->first;
-				smallest_value = iterator->second;
-			}
-			++iterator;
-		}
-		return smallest_color;
-	}
+                smallest_color = iterator->first;
+                smallest_value = iterator->second;
+                ++iterator;
+
+                while(iterator != colorToValue_.end()) {
+                        if(smallest_value >= iterator->second) {
+                                smallest_color = iterator->first;
+                                smallest_value = iterator->second;
+                        }
+                        ++iterator;
+                }
+                return smallest_color;
+        }
 };
 
 #endif /* HEAVY_HITTERS_HPP */

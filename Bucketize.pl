@@ -10,9 +10,9 @@ my $to;
 my $num_bins;
 
 my $result = GetOptions(
-	"from=i" => \$from,
-	"to=i" => \$to,
-	"bins=i" => \$num_bins,
+        "from=i" => \$from,
+        "to=i" => \$to,
+        "bins=i" => \$num_bins,
 ) or die "Invalid input: $!";
 
 die "from must be provided" unless defined $from;
@@ -24,41 +24,41 @@ die "from must be lower than to" unless $from < $to;
 my $step = ($to - $from) / $num_bins;
 my @bins;
 for my $i (0 .. $num_bins - 1) {
-	push @bins, ($i * $step) + $from;
+        push @bins, ($i * $step) + $from;
 }
 
 my $low=0;
 my $high=0;
 my @counts;
 for my $i (@bins) {
-	$counts[$i] = 0;
+        $counts[$i] = 0;
 }
 
 while(<>) {
-	chomp;
-	if ($_ eq "") {
-		next;
-	}
+        chomp;
+        if ($_ eq "") {
+                next;
+        }
 
-	my $value = $_;
-	
-	if ($value < $bins[0]) {
-		$low++;
-	} elsif ($value > $bins[$num_bins-1]+$step) {
-		$high++;
-	} else {
-		for my $i (@bins) {
-			if ($value <= $i) {
-				$counts[$i]++;
-				last;
-			}
-		}
-	}
+        my $value = $_;
+
+        if ($value < $bins[0]) {
+                $low++;
+        } elsif ($value > $bins[$num_bins-1]+$step) {
+                $high++;
+        } else {
+                for my $i (@bins) {
+                        if ($value <= $i) {
+                                $counts[$i]++;
+                                last;
+                        }
+                }
+        }
 }
 
 print "Low $low\n";
 for my $i (@bins) {
-	print "$i-" . ($i+$step) . " $counts[$i]\n";
+        print "$i-" . ($i+$step) . " $counts[$i]\n";
 }
 print "High $high\n";
 

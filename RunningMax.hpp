@@ -5,26 +5,26 @@
 
 class RunningMax
 {
-	private:
-		double max;
+        private:
+        double max;
 
-	public:
-		RunningMax() :
-			max(0.0)
-		{}
+        public:
+        RunningMax() :
+                max(0.0)
+        {}
 
-		~RunningMax()
-		{}
+        ~RunningMax()
+        {}
 
-		double Get() {
-			return max;
-		}
+        double Get() {
+                return max;
+        }
 
-		void Insert(double value) {
-			if(value > max) {
-				max = value;
-			}
-		}
+        void Insert(double value) {
+                if(value > max) {
+                        max = value;
+                }
+        }
 };
 
 #endif /* RUNNING_MAX_H */

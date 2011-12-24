@@ -6,25 +6,24 @@
 
 class EnterpySource
 {
-	public:
+        public:
+        EnterpySource()
+        {
+                struct timeval curTime;
+                gettimeofday(&curTime, NULL);
+                srand(curTime.tv_sec);
+        }
 
-		EnterpySource()
-		{
-			struct timeval curTime;
-			gettimeofday(&curTime, NULL);
-			srand(curTime.tv_sec);
-		}
+        int rand()
+        {
+                return ::rand();
+        }
 
-		int rand()
-		{
-			return ::rand();
-		}
-
-		int rand(int low, int high)
-		{
-			int spread = high - low;
-			return (rand() % spread) + low;
-		}
+        int rand(int low, int high)
+        {
+                int spread = high - low;
+                return (rand() % spread) + low;
+        }
 };
 
 #endif /* ENTERPY_SOURCE_HPP */

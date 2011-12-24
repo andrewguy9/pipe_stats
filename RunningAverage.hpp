@@ -5,27 +5,29 @@
 
 class RunningAverage
 {
-	private:
+        private:
 
-		double total;
-		size_t n;
+        double total;
+        size_t n;
 
-	public:
-		RunningAverage() :
-			total(0.0),
-			n(0)
-		{}
+        public:
+        RunningAverage() :
+                total(0.0),
+                n(0)
+        {}
 
-		~RunningAverage() {}
+        ~RunningAverage() {}
 
-		double Get() {
-			return total / n;
-		}
+        double Get() 
+        {
+                return total / n;
+        }
 
-		void Insert(double value) {
-			total += value;
-			n++;
-		}
+        void Insert(double value) 
+        {
+                total += value;
+                n++;
+        }
 };
 
 #endif /* RUNNING_AVERAGE_H */

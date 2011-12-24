@@ -12,9 +12,9 @@ my $use_percentage = 0;
 
 # Collect Options
 GetOptions(
-	"width=i" => \$line_width,
-	"bwidth=i" => \$bucket_width,
-	"percentage" => \$use_percentage,
+        "width=i" => \$line_width,
+        "bwidth=i" => \$bucket_width,
+        "percentage" => \$use_percentage,
 ) or die "Invalid input: $!";
 
 # Sanity Check
@@ -30,18 +30,18 @@ my $n = 0;
 my $sum = 0;
 while(<>) {
 
-	my $line = $_;
-	chomp $line;
-	$line =~ s/^\s+//;
-	$line =~ s/\s+$//;
+        my $line = $_;
+        chomp $line;
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
 
-	(my $value, my $bucket) = split /\s/, $line;
-	push @buckets, $bucket;
-	push @values, $value;
+        (my $value, my $bucket) = split /\s/, $line;
+        push @buckets, $bucket;
+        push @values, $value;
 
-	$bucket_width_max = max($bucket_width_max, length($bucket));
-	$n++;
-	$sum += $value;
+        $bucket_width_max = max($bucket_width_max, length($bucket));
+        $n++;
+        $sum += $value;
 }
 
 # Compute Results
@@ -57,19 +57,19 @@ $star_width = $line_width - $bucket_width - $line_spaces;
 # Output format
 # <bucket> <stars>
 while(@buckets) {
-	my $bucket = shift @buckets;
-	my $value = shift @values;
+        my $bucket = shift @buckets;
+        my $value = shift @values;
 
-	$bucket = substr $bucket, 0, $bucket_width;
-	$bucket .= " " x ($bucket_width - length($bucket));
-	my $meter_percentage;
-	if($use_percentage) {
-		$meter_percentage = $value / $sum;
-	} else {
-		$meter_percentage = $value / $max_value;
-	}
-	my $stars = "*" x (int($star_width * $meter_percentage));
+        $bucket = substr $bucket, 0, $bucket_width;
+        $bucket .= " " x ($bucket_width - length($bucket));
+        my $meter_percentage;
+        if($use_percentage) {
+                $meter_percentage = $value / $sum;
+        } else {
+                $meter_percentage = $value / $max_value;
+        }
+        my $stars = "*" x (int($star_width * $meter_percentage));
 
-	printf("%s %s\n", $bucket, $stars);
+        printf("%s %s\n", $bucket, $stars);
 }
 
