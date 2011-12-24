@@ -5,7 +5,8 @@
 #include <iterator>
 #include <string>
 
-class HeavyHittersTracker {
+class HeavyHittersTracker 
+{
 
         private:
 

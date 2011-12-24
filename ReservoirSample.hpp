@@ -5,7 +5,8 @@
 #include "EnterpySource.hpp"
 
 template<class T>
-class ReservoirSample {
+class ReservoirSample 
+{
         private:
 
         T *Sample;
@@ -22,11 +23,13 @@ class ReservoirSample {
                 Rand(rand)
         { }
 
-        ~ReservoirSample() {
+        ~ReservoirSample() 
+        {
                 delete [] Sample;
         }
 
-        void Insert(T data) {
+        void Insert(T data) 
+        {
                 size_t index;
                 if(Inserted < Size) {
                         index = Inserted;
@@ -41,11 +44,13 @@ class ReservoirSample {
                 Inserted++;
         }
 
-        T* GetData() {
+        T* GetData() 
+        {
                 return Sample;
         }
 
-        size_t GetInserted() {
+        size_t GetInserted() 
+        {
                 return Inserted;
         }
 };
