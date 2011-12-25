@@ -18,10 +18,9 @@ int main(int argc, char ** argv)
                 getline(std::cin, line);
 
                 if(std::cin.eof()) {
-                        std::cout << "Done reading"<< std::endl;
                         break;
                 } else if(std::cin.fail()) {
-                        std::cout << "Error reading" << std::endl;
+                        std::cerr << "Error reading" << std::endl;
                         return 1;
                 }
 
