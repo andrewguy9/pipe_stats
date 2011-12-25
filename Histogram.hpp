@@ -3,6 +3,6 @@
 
 #include<stdlib.h>
 
-void printHisogram(size_t *data, size_t sampleSize);
+void printHisogram(const size_t *data, size_t sampleSize);
 
 #endif /* HISTOGRAM_HPP */

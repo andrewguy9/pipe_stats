@@ -27,8 +27,8 @@ int main(int argc, char ** argv)
                 sample.Insert(line);
         } while(std::cin.good());
 
-        std::string * data = sample.GetData();
-        size_t length = std::min(sampleSize, sample.GetInserted());
+        const std::string * data = sample.GetData();
+        size_t length = std::min(sample.GetSize(), sample.GetInserted());
         for(size_t index = 0; index < length; index++) {
                 std::cout << data[index] << std::endl;
         }

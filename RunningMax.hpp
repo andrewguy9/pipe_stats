@@ -16,11 +16,13 @@ class RunningMax
         ~RunningMax()
         {}
 
-        double Get() {
+        double Get() const
+        {
                 return max;
         }
 
-        void Insert(double value) {
+        void Insert(double value) 
+        {
                 if(value > max) {
                         max = value;
                 }

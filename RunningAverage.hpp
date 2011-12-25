@@ -18,7 +18,7 @@ class RunningAverage
 
         ~RunningAverage() {}
 
-        double Get() 
+        double Get() const
         {
                 return total / n;
         }

@@ -44,14 +44,19 @@ class ReservoirSample
                 Inserted++;
         }
 
-        T* GetData() 
+        const T* GetData() const
         {
                 return Sample;
         }
 
-        size_t GetInserted() 
+        size_t GetInserted() const
         {
                 return Inserted;
+        }
+
+        size_t GetSize() const
+        {
+                return Size;
         }
 };
 

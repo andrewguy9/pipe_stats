@@ -14,12 +14,12 @@ class EnterpySource
                 srand(curTime.tv_sec);
         }
 
-        int rand()
+        int rand() const
         {
                 return ::rand();
         }
 
-        int rand(int low, int high)
+        int rand(int low, int high) const
         {
                 int spread = high - low;
                 return (rand() % spread) + low;
