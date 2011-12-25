@@ -13,13 +13,13 @@ my $result = GetOptions(
         "from=i" => \$from,
         "to=i" => \$to,
         "bins=i" => \$num_bins,
-) or die "Invalid input: $!";
+) or die usage("Invalid input: $!");
 
-die "from must be provided" unless defined $from;
-die "die must be provided" unless defined $to;
-die "bins must be provided" unless defined $num_bins;
+die usage("from must be provided") unless defined $from;
+die usage("die must be provided") unless defined $to;
+die usage("bins must be provided") unless defined $num_bins;
 
-die "from must be lower than to" unless $from < $to;
+die usage("from must be lower than to") unless $from < $to;
 
 my $step = ($to - $from) / $num_bins;
 my @bins;
@@ -62,3 +62,11 @@ for my $i (@bins) {
 }
 print "High $high\n";
 
+sub usage {
+        my $msg = shift @_;
+
+        print STDERR "$msg\n";
+        print STDERR "Bucketize.pl --from n --to n --bins n\n";
+        print STDERR "Consumes stream of the format\n";
+        print STDERR "number\n..."
+}

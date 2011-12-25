@@ -15,7 +15,7 @@ GetOptions(
         "width=i" => \$line_width,
         "bwidth=i" => \$bucket_width,
         "percentage" => \$use_percentage,
-) or die "Invalid input: $!";
+) or die usage("Invalid input: $!");
 
 # Sanity Check
 my $terminal_width = `tput cols`;
@@ -73,3 +73,12 @@ while(@buckets) {
         printf("%s %s\n", $bucket, $stars);
 }
 
+sub usage 
+{
+        my $msg = shift @_;
+
+        print STDERR "$msg\n";
+        print STDERR "Histogram.pl {--width n} {--bwidth n} {--percentage}\n";
+        print STDERR "Consumes stream of the format\n";
+        print STDERR "number bucket\n..."
+}
