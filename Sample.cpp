@@ -15,8 +15,7 @@ int main(int argc, char ** argv)
         do {
                 std::string line;
 
-                std::cin >> line;
-                std::cout << "read line '" << line << "'\n";
+                getline(std::cin, line);
 
                 if(std::cin.eof()) {
                         std::cout << "Done reading"<< std::endl;
