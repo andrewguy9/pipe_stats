@@ -7,23 +7,10 @@
 class EnterpySource
 {
         public:
-        EnterpySource()
-        {
-                struct timeval curTime;
-                gettimeofday(&curTime, NULL);
-                srand(curTime.tv_sec);
-        }
-
-        int rand() const
-        {
-                return ::rand();
-        }
-
-        int rand(int low, int high) const
-        {
-                int spread = high - low;
-                return (rand() % spread) + low;
-        }
+        virtual int rand() const = 0;
+        virtual int rand(int low, int high) const = 0;
 };
+
+EnterpySource & GetEnterpySource();
 
 #endif /* ENTERPY_SOURCE_HPP */

@@ -7,7 +7,7 @@
 
 int main() 
 {
-        EnterpySource es;
+        EnterpySource & es = GetEnterpySource();
         HeavyHittersTracker hht(100);
 
 

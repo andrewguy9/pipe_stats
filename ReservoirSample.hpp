@@ -12,11 +12,11 @@ class ReservoirSample
         T *Sample;
         size_t Size;
         size_t Inserted;
-        EnterpySource * Rand;
+        EnterpySource & Rand;
 
         public:
 
-        ReservoirSample(size_t size, EnterpySource * rand) :
+        ReservoirSample(size_t size, EnterpySource & rand) :
                 Sample(new T[size]),
                 Size(size),
                 Inserted(0),
@@ -34,7 +34,7 @@ class ReservoirSample
                 if(Inserted < Size) {
                         index = Inserted;
                 } else {
-                        index = Rand->rand(0, Inserted);
+                        index = Rand.rand(0, Inserted);
                 }
 
                 if(index < Size) {

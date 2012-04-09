@@ -7,10 +7,10 @@
 int main(int argc, char ** argv) 
 {
 
-        EnterpySource enterpySource;
+        EnterpySource & enterpySource = GetEnterpySource();
         const size_t sampleSize = 1000;
 
-        ReservoirSample<std::string> sample(sampleSize, &enterpySource);
+        ReservoirSample<std::string> sample(sampleSize, enterpySource);
 
         do {
                 std::string line;

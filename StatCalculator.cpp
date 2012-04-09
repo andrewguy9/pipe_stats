@@ -23,12 +23,12 @@ void printHHT(
 int main(int argc, char ** argv) 
 {
 
-        EnterpySource enterpySource;
+        EnterpySource &enterpySource = GetEnterpySource();
 
         RunningAverage avg;
         RunningMax max;
         const size_t sampleSize = 1000;
-        ReservoirSample<size_t> sample(sampleSize, &enterpySource);
+        ReservoirSample<size_t> sample(sampleSize, enterpySource);
         HeavyHittersTracker hhtSize(20);
         HeavyHittersTracker hhtFiles(20);
 
