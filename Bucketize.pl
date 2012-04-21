@@ -5,68 +5,56 @@ use warnings;
 
 use Getopt::Long;
 
-my $from;
-my $to;
 my $num_bins;
 
 my $result = GetOptions(
-        "from=i" => \$from,
-        "to=i" => \$to,
         "bins=i" => \$num_bins,
 ) or die usage("Invalid input: $!");
 
-die usage("from must be provided") unless defined $from;
-die usage("die must be provided") unless defined $to;
 die usage("bins must be provided") unless defined $num_bins;
+die usage("bins must be positive") unless $num_bins > 0;
 
-die usage("from must be lower than to") unless $from < $to;
-
-my $step = ($to - $from) / $num_bins;
-my @bins;
-for my $i (0 .. $num_bins - 1) {
-        push @bins, ($i * $step) + $from;
-}
-
-my $low=0;
-my $high=0;
-my @counts;
-for my $i (@bins) {
-        $counts[$i] = 0;
-}
-
+my @data;
 while(<>) {
         chomp;
-        if ($_ eq "") {
-                next;
-        }
+        print "READ $_\n";
+        push @data, $_;
+}
+@data = sort @data;
 
-        my $value = $_;
+my $low = $data[0];
+my $high = $data[-1];
+my $step = ($high - $low) / $num_bins;
 
-        if ($value < $bins[0]) {
-                $low++;
-        } elsif ($value > $bins[$num_bins-1]+$step) {
-                $high++;
-        } else {
-                for my $i (@bins) {
-                        if ($value <= $i) {
-                                $counts[$i]++;
-                                last;
-                        }
-                }
+my @bins;
+my @lows;
+my @highs;
+my $bin = 0;
+my $bin_low = $low;
+my $bin_end = $bin_low + $step;
+
+push @lows, $low;
+push @highs, $high;
+for my $val (@data) {
+        if ($val > $bin_end) {
+                $bin++;
+                $bin_low = $bin_end;
+                $bin_end += $step;
+                push @lows, $low;
+                push @highs, $high;
         }
+        $bins[$bin]++;
 }
 
-print "Low $low\n";
-for my $i (@bins) {
-        print "$i-" . ($i+$step) . " $counts[$i]\n";
+for (my $i = 0; $i < @bins; $i++) {
+        print "$lows[$i]-$highs[$i]:$bins[$i]\n";
 }
-print "High $high\n";
 
 sub usage {
         my $msg = shift @_;
 
         print STDERR "$msg\n";
-        print STDERR "Bucketize.pl --from n --to n --bins n\n";
+        print STDERR "Bucketize.pl --bins n\n";
         print STDERR "Consumes stream of the format\n";
         print STDERR "number\n..."
 }
