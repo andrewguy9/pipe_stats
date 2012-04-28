@@ -10,13 +10,15 @@ my $bucket_width;
 my $star_width;
 my $use_percentage = 0;
 my $flip = 0;
+my $log_scale = 0;
 
 # Collect Options
 GetOptions(
         "width=i" => \$line_width,
         "bwidth=i" => \$bucket_width,
         "percentage" => \$use_percentage,
-        "flip" => \$flip
+        "flip" => \$flip,
+        "log" => \$log_scale
 ) or die usage("Invalid input: $!");
 
 # Sanity Check
@@ -46,6 +48,9 @@ while(<>) {
         } else {
                 ($bucket, $value) = split /\s/, $line;
         }
+
+        $value = log($value) if $log_scale;
+
         push @buckets, $bucket;
         push @values, $value;
 
@@ -83,7 +88,7 @@ while(@buckets) {
         printf("%s %s\n", $bucket, $stars);
 }
 
-sub usage 
+sub usage
 {
         my $msg = shift @_;
 
