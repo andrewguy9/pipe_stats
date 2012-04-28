@@ -37,6 +37,8 @@ while(<>) {
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
 
+        next if not $line;
+
         my $value;
         my $bucket;
         if ($flip) {
