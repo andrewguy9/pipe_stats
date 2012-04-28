@@ -9,12 +9,14 @@ my $line_width;
 my $bucket_width;
 my $star_width;
 my $use_percentage = 0;
+my $flip = 0;
 
 # Collect Options
 GetOptions(
         "width=i" => \$line_width,
         "bwidth=i" => \$bucket_width,
         "percentage" => \$use_percentage,
+        "flip" => \$flip
 ) or die usage("Invalid input: $!");
 
 # Sanity Check
@@ -35,7 +37,13 @@ while(<>) {
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
 
-        (my $value, my $bucket) = split /\s/, $line;
+        my $value;
+        my $bucket;
+        if ($flip) {
+                ($value, $bucket) = split /\s/, $line;
+        } else {
+                ($bucket, $value) = split /\s/, $line;
+        }
         push @buckets, $bucket;
         push @values, $value;
 
@@ -80,5 +88,5 @@ sub usage
         print STDERR "$msg\n";
         print STDERR "Histogram.pl {--width n} {--bwidth n} {--percentage}\n";
         print STDERR "Consumes stream of the format\n";
-        print STDERR "number bucket\n..."
+        print STDERR "bucket number\n..."
 }
