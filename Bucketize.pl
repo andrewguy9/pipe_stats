@@ -2,59 +2,52 @@
 
 use strict;
 use warnings;
+use POSIX;
 
 use Getopt::Long;
+use List::Util qw[min max];
 
-my $num_bins;
+my $step = 1;
 
 my $result = GetOptions(
-        "bins=i" => \$num_bins,
+        "step=i" => \$step
 ) or die usage("Invalid input: $!");
-
-die usage("bins must be provided") unless defined $num_bins;
-die usage("bins must be positive") unless $num_bins > 0;
 
 my @data;
 while(<>) {
         chomp;
-        print "READ $_\n";
         push @data, $_;
 }
-@data = sort @data;
 
-my $low = $data[0];
-my $high = $data[-1];
-my $step = ($high - $low) / $num_bins;
+my $low = floor(min(@data));
 
-my @bins;
-my @lows;
-my @highs;
-my $bin = 0;
-my $bin_low = $low;
-my $bin_end = $bin_low + $step;
-
-push @lows, $low;
-push @highs, $high;
+my %bins = ();
 for my $val (@data) {
-        if ($val > $bin_end) {
-                $bin++;
-                $bin_low = $bin_end;
-                $bin_end += $step;
-                push @lows, $low;
-                push @highs, $high;
-        }
-        $bins[$bin]++;
+        my $bin = floor(($val - $low) / $step);
+        $bins{$bin}++;
 }
 
-for (my $i = 0; $i < @bins; $i++) {
-        print "$lows[$i]-$highs[$i]:$bins[$i]\n";
+my $last = 0;
+for my $i (sort {$a <=> $b} keys %bins) {
+        for (my $gap = $last; $gap < $i; $gap++) {
+                my $gap_bottom = $gap * $step;
+                my $gap_top = ($gap+1) * $step;
+
+                print "[$gap_bottom-$gap_top) 0\n";
+        }
+        my $bottom = $i * $step;
+        my $top = ($i+1) * $step;
+        my $num = $bins{$i};
+
+        print "[$bottom-$top) $num\n";
+        $last = $i;
 }
 
 sub usage {
         my $msg = shift @_;
 
         print STDERR "$msg\n";
-        print STDERR "Bucketize.pl --bins n\n";
+        print STDERR "Bucketize.pl [--step n]\n";
         print STDERR "Consumes stream of the format\n";
         print STDERR "number\n..."
 }
