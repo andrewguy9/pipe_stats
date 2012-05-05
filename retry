@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Getopt::Long;
+
+my $sleep = 0;
+my $repeat = 1;
+my @arguments = ();
+
+my $result = GetOptions(
+        "sleep=i" => \$sleep,
+        "repeat=i" => \$repeat) or die usage("Invalid input $!");
+
+my $successes = 0;
+my $failures = 0;
+
+do 
+{
+        my $result_str;
+        $result = fire(@ARGV);
+        if ($result) {
+                $result_str = "Failure";
+                $failures ++;
+        } else {
+                $result_str = "Success";
+                $successes ++;
+        }
+
+        my $attempts = $successes + $failures;
+        my $rate = $successes / $attempts;
+
+        print "$result_str $successes/$attempts $rate\n";
+
+        $repeat --;
+        sleep $sleep;
+} while($repeat);
+
+sub fire {
+        my $pid = fork();
+        if(not defined $pid) {
+                return 1;
+        } elsif ($pid == 0) {
+                exec @ARGV;
+        } else {
+                wait;
+                return $?;
+        }
+        return 1;
+}
+
+sub usage {
+        my $msg = shift @_;
+
+        print STDERR "$msg\n";
+        print STDERR "retry [--sleep time] [--retry count] -- program args...\n";
+        print STDERR "Runs program with arguments args count times\n";
+        print STDERR "sleeping time between attempts.\n";
+        print STDERR "Prints success statistics between runs\n";
+}
+
