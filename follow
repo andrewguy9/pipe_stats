@@ -1,0 +1,69 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Getopt::Long;
+
+my $sleep_time = .5;
+
+my $result = GetOptions(
+        "sleep=f" => \$sleep_time
+) or die usage("Invalid Input $!");
+
+my @files = @ARGV;
+
+my %fds = (); # keys are names, values are file descriptors.
+my %inodes = (); # keys are names, values are inode numbers.
+my $go = 1;
+while($go) {
+
+        # See if inodes changed
+        my @changed_files = ();
+        for my $filename (@files) {
+                my @stats = stat $filename or next;
+                my $inode = $stats[1];
+
+                if (! $inodes{$filename} or $inode != $inodes{$filename}) {
+                        print STDERR "File $filename changed\n";
+                        push @changed_files, $filename;
+                } else {
+                        print STDERR "File $filename unchanged\n";
+                }
+        }
+
+
+        # Read what we can from old descriptos
+        for my $fd (values %fds) {
+                print STDERR "Printing fd $fd\n";
+
+                while(<$fd>) {
+                        my $line = $_;
+                        print $_;
+                }
+        }
+
+        # Try and open descriptors to files which changed or are not open
+        for my $filename (@changed_files)
+        {
+                if ($fds{$filename} ) {
+                        print STDERR "Closing $filename\n";
+                        my $fd = $fds{$filename};
+                        close $fd;
+                }
+
+                print STDERR "Opening $filename\n";
+                open my $fd, "<", $filename;
+                if ($fd <=2) {
+                        print STDERR "Failed to open $filename\n";
+                        next;
+                }
+                $fds{$filename} = $fd;
+
+                my @stats = stat $fd or die "Failed to stat $filename with $!";
+                $inodes{$filename} = $stats[1];
+                print STDERR "file $filename has inode $stats[1]\n";
+        }
+
+        sleep 1;
+        $go = 1;
+}
