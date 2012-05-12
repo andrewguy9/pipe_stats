@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use Getopt::Long;
+use File::Temp qw/ tempfile /;
 
 # 1 copy file
 # 2 less file
@@ -25,7 +26,15 @@ close $orig_file;
 do
 {
         view_buffer($buffers[-1]);
-} while(0);
+        my @new_filters = edit_filters(@filters);
+        apply_filters(\@buffers, \@filters, \@new_filters);
+        @filters = @new_filters;
+
+} while(@filters);
+
+
+
+
 
 sub usage{
         my $msg = shift@_;
@@ -51,7 +60,61 @@ sub file_to_buffer {
 sub view_buffer {
         my $buffer = shift @_;
 
+        my $less_pid = open my $less_stdin, "|-", "less" or die "Could not fork less: $!";
         for my $line (@$buffer) {
-                print $line;
+                print $less_stdin $line;
         }
+}
+
+sub edit_filters
+{
+        my @filters = @_;
+
+        (my $flt_fh, my $flt_name) = tempfile() or die "Could not open temp file: $!";
+        for my $filter (@filters) {
+                print $flt_fh "$filter\n";
+        }
+
+        if (fork) {
+                wait;
+        } else {
+                exec ("vim", "$flt_name");
+        }
+
+        @filters = ();
+        open my $flt_in, "<", $flt_name or die "Could not open temp file: $!";
+        while(<$flt_in>) {
+                chomp;
+                push @filters, $_;
+        }
+
+        close $flt_in;
+        close $flt_fh;
+        unlink ($flt_name);
+
+        return @filters;
+}
+
+sub apply_filters
+{
+        (my $buffers, my $filters, my $new_filters) = @_;
+
+        my $orig_buffer = @$buffers[0];
+        my @new_buffer = ();
+
+        for my $line (@$orig_buffer) {
+                chomp $line;
+                my $blocked = 0;
+                for my $filter (@$new_filters) {
+                        if ($line =~ /($filter)/) {
+                                $blocked = 1;
+                                last;
+                        }
+                }
+                if (!$blocked) {
+                        push @new_buffer, "$line\n";
+                }
+        }
+
+        @$buffers[1] = \@new_buffer;
 }
