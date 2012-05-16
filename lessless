@@ -17,6 +17,9 @@ my $result = GetOptions() or die usage();
 my @buffers = ();
 my @filters = ();
 
+# Ignore SIGPIPE so open pipe works.
+$SIG{PIPE} = "IGNORE";
+
 # Set up file
 die usage("File must be specified") unless defined $ARGV[0];
 open my $orig_file, "<", $ARGV[0] or die usage("Unable to open file");
