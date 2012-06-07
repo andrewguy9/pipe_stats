@@ -16,6 +16,7 @@ my @files = @ARGV;
 
 my %fds = (); # keys are names, values are file descriptors.
 my %inodes = (); # keys are names, values are inode numbers.
+my %sizes = (); # keys are names, values are file sizes.
 my $go = 1;
 while($go) {
 
@@ -24,9 +25,13 @@ while($go) {
         for my $filename (@files) {
                 my @stats = stat $filename or next;
                 my $inode = $stats[1];
+                my $size = $stats[7];
 
                 if (! $inodes{$filename} or $inode != $inodes{$filename}) {
                         print STDERR "File $filename changed\n";
+                        push @changed_files, $filename;
+                } elsif (! $sizes{$filename} or $size < $sizes{$filename}) {
+                        print STDERR "File $filename was truncated\n";
                         push @changed_files, $filename;
                 }
         }
@@ -58,6 +63,7 @@ while($go) {
 
                 my @stats = stat $fd or die "Failed to stat $filename with $!";
                 $inodes{$filename} = $stats[1];
+                $sizes{$filename} = $stats[7];
         }
 
         sleep $sleep_time;
