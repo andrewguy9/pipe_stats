@@ -4,11 +4,11 @@
 #include "ReservoirSample.hpp"
 #include "EnterpySource.hpp"
 
-int main(int argc, char ** argv) 
+int main(int argc, char ** argv)
 {
 
         EnterpySource & enterpySource = GetEnterpySource();
-        const size_t sampleSize = 1000;
+        const size_t sampleSize = 10000;
 
         ReservoirSample<std::string> sample(sampleSize, enterpySource);
 
@@ -32,7 +32,7 @@ int main(int argc, char ** argv)
         for(size_t index = 0; index < length; index++) {
                 std::cout << data[index] << std::endl;
         }
-        
+
         return 0;
 }
 
