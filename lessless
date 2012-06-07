@@ -15,7 +15,14 @@ use File::Temp qw/ tempfile /;
 my $result = GetOptions() or die usage();
 
 my @buffers = ();
-my @filters = ();
+my @filters = (
+        "# Specify regex filters to apply to file.",
+        "# /regex/ - removes lines which match.",
+        "# m/regex/ - greps for lines which match",
+        "# # - specifies a comment",
+        "# type EXIT to exit.",
+        "",
+);
 
 # Ignore SIGPIPE so open pipe works.
 $SIG{PIPE} = "IGNORE";
@@ -108,16 +115,54 @@ sub apply_filters
         for my $line (@$orig_buffer) {
                 chomp $line;
                 my $blocked = 0;
+                my $accept = 0;
                 for my $filter (@$new_filters) {
-                        if ($line =~ /($filter)/) {
-                                $blocked = 1;
-                                last;
-                        }
+                        (my $cur_accept, my $cur_blocked) = apply_filter($filter, $line);
+                        $accept = $accept || $cur_accept;
+                        $blocked = $blocked || $cur_blocked;
                 }
-                if (!$blocked) {
+                if ($accept || !$blocked) {
                         push @new_buffer, "$line\n";
                 }
         }
 
         @$buffers[1] = \@new_buffer;
+}
+
+sub apply_filter
+{
+        (my $filter, my $line) = @_;
+
+        return (0,0) if !$filter;
+        return (0,0) if ($filter =~ /^#/);
+        exit if (defined $filter && $filter eq "EXIT");
+
+        my $mode = "";
+        my $regex = "";
+        if ( $filter =~ /([^\/])?\/(.*)\// ) {
+                $mode = $1 or $mode = "v";
+                $regex = $2;
+        } else {
+                die "'$filter' is illegal expression";
+        }
+
+        die "'$regex' is not valid" if !defined $regex;
+
+        my $matched = 0;
+        if ($line =~ /($regex)/) {
+                $matched = 1;
+        }
+
+        my $accept = 0;
+        my $blocked = 0;
+
+        if ($matched) {
+                if ($mode eq 'm') {
+                        $accept = 1;
+                } else {
+                        $blocked = 1;
+                }
+        }
+
+        return ($accept, $blocked);
 }
