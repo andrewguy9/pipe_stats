@@ -4,10 +4,10 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my $sleep_time = .5;
+my $sleep_time = 1;
 
 my $result = GetOptions(
-        "sleep=f" => \$sleep_time
+        "sleep=f" => \$sleep_time,
 ) or die usage("Invalid Input $!");
 
 my @files = @ARGV;
@@ -64,6 +64,6 @@ while($go) {
                 print STDERR "file $filename has inode $stats[1]\n";
         }
 
-        sleep 1;
+        sleep $sleep_time;
         $go = 1;
 }
