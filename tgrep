@@ -1,0 +1,76 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Getopt::Long;
+use Date::Parse;
+
+# Columns to use for date data.
+my $lo = 0;          # lo column
+my $hi = 1;          # hi column
+my $delim = '\s';    # delimiter to split line with
+my $verbose = 0;
+
+
+# Time period to capture.
+my $start_str; # Start time
+my $stop_str;  # End time
+my $len;       # length of period
+
+my $result = GetOptions(
+        "lo=s" => \$lo,
+        "hi=s" => \$hi,
+        "start=s" => \$start_str,
+        "stop=s" => \$stop_str,
+        "len=f" => \$len,
+        "verbose" => \$verbose,
+) or die "Invalid Parameters $!";
+
+my $start = str2time($start_str) if defined $start_str;
+my $stop = str2time($stop_str) if defined $stop_str;
+
+if (defined $start_str && ! $start)
+{
+        die "Invalid date: $start_str";
+}
+
+if (defined $stop_str && ! $stop)
+{
+        die "Invalid date: $stop_str";
+}
+
+if (defined $start and ! defined $stop and defined $len) {
+        $stop = $start + $len;
+} elsif (! defined $start and defined $stop and defined $len) {
+        $start = $stop - $len;
+}
+
+
+if(! defined $start or ! defined $stop) {
+        die "Must specify start and stop or len.";
+}
+
+# print "lo: $lo\n";
+# print "hi: $hi\n";
+# print "start: $start\n";
+# print "stop: $stop\n";
+# print "len: $len\n";
+
+while(<>) {
+
+        my @toks = split /$delim/, $_;
+        my @date_cols = @toks[$lo..$hi];
+        my $date = join " ", @date_cols;
+        my $time = str2time($date);
+        if (!$time)
+        {
+                print STDERR "Invalid time $date\n" if $verbose;
+                next;
+        }
+
+        if ($time >= $start && $time <=$stop) 
+        {
+                print $_;
+        }
+}
+
