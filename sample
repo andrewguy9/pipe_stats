@@ -12,19 +12,32 @@ my $result = GetOptions(
         "n=f"=> \$sampleSize,
 ) or die "Invalid Options: $!";
 
-while(<>) 
-{
-        if ($n < $sampleSize) {
-                push @sample, $_;
-        } else {
-                my $index = int(rand($n));
-                if ($index < $sampleSize) {
-                        $sample[ $index ] = $_;
-                }
+if (@ARGV) {
+        for my $file (@ARGV) {
+                open my $fd, $file or next;
+                process_file($fd);
+                close $fd;
         }
-        $n++;
+} else {
+        process_file($STDIN);
 }
 
-for my $line (@sample) {
-        print $line;
+sub process_file {
+        my $fd = shift @_;
+        while(<>) 
+        {
+                if ($n < $sampleSize) {
+                        push @sample, $_;
+                } else {
+                        my $index = int(rand($n));
+                        if ($index < $sampleSize) {
+                                $sample[ $index ] = $_;
+                        }
+                }
+                $n++;
+        }
+
+        for my $line (@sample) {
+                print $line;
+        }
 }
