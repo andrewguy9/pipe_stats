@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Getopt::Long;
+
+my $sampleSize = 10000;
+my @sample = ();
+my $n = 0;
+
+my $result = GetOptions(
+        "n=f"=> \$sampleSize,
+) or die "Invalid Options: $!";
+
+while(<>) 
+{
+        if ($n < $sampleSize) {
+                push @sample, $_;
+        } else {
+                my $index = int(rand($n));
+                if ($index < $sampleSize) {
+                        $sample[ $index ] = $_;
+                }
+        }
+        $n++;
+}
+
+for my $line (@sample) {
+        print $line;
+}
