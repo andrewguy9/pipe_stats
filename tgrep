@@ -34,6 +34,9 @@ if (defined $start_str && ! $start)
         die "Invalid date: $start_str";
 }
 
+print STDERR "Start epoch: $start\n" if $verbose;
+print STDERR "stop  epoch: $stop\n"  if $verbose;
+
 if (defined $stop_str && ! $stop)
 {
         die "Invalid date: $stop_str";
@@ -50,11 +53,13 @@ if(! defined $start or ! defined $stop) {
         die "Must specify start and stop or len.";
 }
 
-# print "lo: $lo\n";
-# print "hi: $hi\n";
-# print "start: $start\n";
-# print "stop: $stop\n";
-# print "len: $len\n";
+if ($verbose) {
+        print STDERR "lo: $lo\n";
+        print STDERR "hi: $hi\n";
+        print STDERR "start: $start\n";
+        print STDERR "stop: $stop\n";
+        print STDERR "len: $len\n";
+}
 
 while(<>) {
 
@@ -64,7 +69,7 @@ while(<>) {
         my $time = str2time($date);
         if (!$time)
         {
-                print STDERR "Invalid time $date\n" if $verbose;
+                print STDERR "Invalid time '$date'\n" if $verbose;
                 next;
         }
 
