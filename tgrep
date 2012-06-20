@@ -61,21 +61,41 @@ if ($verbose) {
         print STDERR "len: $len\n";
 }
 
-while(<>) {
-
-        my @toks = split /$delim/, $_;
-        my @date_cols = @toks[$lo..$hi];
-        my $date = join " ", @date_cols;
-        my $time = str2time($date);
-        if (!$time)
+if(@ARGV) {
+        for my $filename (@ARGV)
         {
-                print STDERR "Invalid time '$date'\n" if $verbose;
-                next;
+                print STDERR "Looking up file $filename\n" if $verbose;
+                open (my $FD, "<", $filename);
+                if ($FD <= 2) {
+                        print STDERR "Failed to open $filename\n" if $verbose;
+                        next;
+                }
+
+                grep_file($FD);
         }
+} else {
+        grep_file($STDIN);
+}
 
-        if ($time >= $start && $time <=$stop) 
-        {
-                print $_;
+sub grep_file
+{
+        my $FD = shift;
+        while(<$FD>) {
+
+                my @toks = split /$delim/, $_;
+                my @date_cols = @toks[$lo..$hi];
+                my $date = join " ", @date_cols;
+                my $time = str2time($date);
+                if (!$time)
+                {
+                        print STDERR "Invalid time '$date'\n" if $verbose;
+                        next;
+                }
+
+                if ($time >= $start && $time <=$stop)
+                {
+                        print $_;
+                }
         }
 }
 
