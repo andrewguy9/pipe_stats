@@ -74,7 +74,7 @@ if(@ARGV) {
                 grep_file($FD);
         }
 } else {
-        grep_file($STDIN);
+        grep_file(*STDIN);
 }
 
 sub grep_file
