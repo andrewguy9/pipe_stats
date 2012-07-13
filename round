@@ -47,7 +47,7 @@ sub usage {
         my $msg = shift @_;
 
         print STDERR "$msg\n";
-        print STDERR "Bucketize.pl [--step n]\n";
+        print STDERR "round [--step n]\n";
         print STDERR "Consumes stream of the format\n";
         print STDERR "number\n..."
 }
