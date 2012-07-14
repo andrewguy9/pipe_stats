@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+#
+# A version of less which allows you to omit or select lines from the file.
+#
+
 use strict;
 use warnings;
 use Getopt::Long;

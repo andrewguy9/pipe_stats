@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+#
+# Repeats some script untill success.
+#
+
 use strict;
 use warnings;
 use Getopt::Long;

@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+#
+# Follows a file like tail -f, except that it always starts 
+# printing at the beginning of the file.
+#
+
 use strict;
 use warnings;
 use Getopt::Long;

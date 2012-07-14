@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+#
+# A version of grep which selects timestamps according to rules.
+#
+
 use strict;
 use warnings;
 use Getopt::Long;

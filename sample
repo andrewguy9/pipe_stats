@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+#
+# Produces a representative sample from a stream of undetermined length.
+#
+
 use strict;
 use warnings;
 use Getopt::Long;

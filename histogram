@@ -1,4 +1,9 @@
 #!/usr/bin/perl
+
+#
+# Consumes a stream of bucket, value pairs and produces a histogram.
+#
+
 use strict;
 use warnings;
 
