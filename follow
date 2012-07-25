@@ -4,6 +4,8 @@
 # Follows a file like tail -f, except that it always starts 
 # printing at the beginning of the file.
 #
+# Useful for following log files.
+#
 
 use strict;
 use warnings;
@@ -22,10 +24,9 @@ my @files = @ARGV;
 my %fds = (); # keys are names, values are file descriptors.
 my %inodes = (); # keys are names, values are inode numbers.
 my %sizes = (); # keys are names, values are file sizes.
-my $go = 1;
-while($go) {
+while(1) {
 
-        # See if inodes changed
+        # See if the file was replaced
         my @changed_files = ();
         for my $filename (@files) {
                 my @stats = stat $filename or next;
@@ -33,9 +34,11 @@ while($go) {
                 my $size = $stats[7];
 
                 if (! $inodes{$filename} or $inode != $inodes{$filename}) {
+                        # The inode changed
                         print STDERR "File $filename changed\n";
                         push @changed_files, $filename;
                 } elsif (! $sizes{$filename} or $size < $sizes{$filename}) {
+                        # The file was truncated
                         print STDERR "File $filename was truncated\n";
                         push @changed_files, $filename;
                 }
@@ -51,7 +54,7 @@ while($go) {
                 }
         }
 
-        # Try and open descriptors to files which changed or are not open
+        # Try and open descriptors to paths which changed or are not open
         for my $filename (@changed_files)
         {
                 if ($fds{$filename} ) {
@@ -72,5 +75,13 @@ while($go) {
         }
 
         sleep $sleep_time;
-        $go = 1;
+}
+
+sub usage
+{
+        my $msg = shift @_;
+
+        print STDERR "$msg\n";
+        print STDERR "follow {--sleep sec} {--verbose} files...\n";
+        print STDERR "follows files sleeping sec when eof is reached.\n";
 }
