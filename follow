@@ -21,9 +21,13 @@ my $result = GetOptions(
 
 my @files = @ARGV;
 
-my %fds = (); # keys are names, values are file descriptors.
+if (! @files) {
+        die usage("Please specify a file to follow");
+}
+
+my %fds = ();    # keys are names, values are file descriptors.
 my %inodes = (); # keys are names, values are inode numbers.
-my %sizes = (); # keys are names, values are file sizes.
+my %sizes = ();  # keys are names, values are file sizes.
 while(1) {
 
         # See if the file was replaced
@@ -37,11 +41,14 @@ while(1) {
                         # The inode changed
                         print STDERR "File $filename changed\n";
                         push @changed_files, $filename;
-                } elsif (! $sizes{$filename} or $size < $sizes{$filename}) {
-                        # The file was truncated
+                } elsif (not $sizes{$filename} or $size < $sizes{$filename}) {
+                        # The file was truncated, dont read at all.
                         print STDERR "File $filename was truncated\n";
                         push @changed_files, $filename;
+                        close_name($filename);
                 }
+
+                $sizes{$filename} = $size;
         }
 
 
@@ -57,10 +64,7 @@ while(1) {
         # Try and open descriptors to paths which changed or are not open
         for my $filename (@changed_files)
         {
-                if ($fds{$filename} ) {
-                        my $fd = $fds{$filename};
-                        close $fd;
-                }
+                close_name($filename);
 
                 open my $fd, "<", $filename;
                 if ($fd <=2) {
@@ -84,4 +88,18 @@ sub usage
         print STDERR "$msg\n";
         print STDERR "follow {--sleep sec} {--verbose} files...\n";
         print STDERR "follows files sleeping sec when eof is reached.\n";
+}
+
+sub close_name
+{
+        my $filename = shift @_;
+        if ($fds{$filename} ) {
+                my $fd = $fds{$filename};
+
+                delete $fds{$filename};
+                delete $inodes{$filename};
+                delete $sizes{$filename};
+
+                close $fd;
+        }
 }
