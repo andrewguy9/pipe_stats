@@ -9,7 +9,7 @@ use warnings;
 use Getopt::Long;
 
 my $sleep = 0;
-my $retry = 1;
+my $retry = -1;
 my @arguments = ();
 
 my $result = GetOptions(
@@ -23,7 +23,9 @@ do
           exit(0);
         }
 
-        $retry --;
+        if ($retry > 0) {
+                $retry --;
+        }
         sleep $sleep;
 } while($retry);
 exit(1);
