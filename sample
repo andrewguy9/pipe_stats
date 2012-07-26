@@ -13,8 +13,8 @@ my @sample = ();
 my $n = 0;
 
 my $result = GetOptions(
-        "n=f"=> \$sampleSize,
-) or die "Invalid Options: $!";
+        "size=i"=> \$sampleSize,
+) or die usage("Invalid options: $!");
 
 if (@ARGV) {
         for my $file (@ARGV) {
@@ -40,8 +40,18 @@ sub process_file {
                 }
                 $n++;
         }
-
         for my $line (@sample) {
                 print $line;
         }
 }
+
+sub usage {
+        my $msg = shift @_;
+
+        print STDERR "$msg\n";
+        print STDERR "sample [--size n] [files...]\n";
+        print STDERR "Collects a statistical sample of size n\n";
+        print STDERR "If no files are specified, reads from stdin\n";
+}
+
+
