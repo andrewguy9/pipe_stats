@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# Repeats some script untill success.
+# Repeats some action until there are n failed attemps, or a success.
 #
 
 use strict;
@@ -9,36 +9,24 @@ use warnings;
 use Getopt::Long;
 
 my $sleep = 0;
-my $repeat = 1;
+my $retry = 1;
 my @arguments = ();
 
 my $result = GetOptions(
         "sleep=i" => \$sleep,
-        "repeat=i" => \$repeat) or die usage("Invalid input $!");
+        "retry=i" => \$retry) or die usage("Invalid input $!");
 
-my $successes = 0;
-my $failures = 0;
-
-do 
+do
 {
-        my $result_str;
         $result = fire(@ARGV);
-        if ($result) {
-                $result_str = "Failure";
-                $failures ++;
-        } else {
-                $result_str = "Success";
-                $successes ++;
+        if ($result == 0) {
+          exit(0);
         }
 
-        my $attempts = $successes + $failures;
-        my $rate = $successes / $attempts;
-
-        print "$result_str $successes/$attempts $rate\n";
-
-        $repeat --;
+        $retry --;
         sleep $sleep;
-} while($repeat);
+} while($retry);
+exit(1);
 
 sub fire {
         my $pid = fork();
@@ -59,7 +47,6 @@ sub usage {
         print STDERR "$msg\n";
         print STDERR "retry [--sleep time] [--retry count] -- program args...\n";
         print STDERR "Runs program with arguments args count times\n";
-        print STDERR "sleeping time between attempts.\n";
-        print STDERR "Prints success statistics between runs\n";
+        print STDERR "seconds to sleep between attempts.\n";
 }
 
