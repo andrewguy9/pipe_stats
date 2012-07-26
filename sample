@@ -34,7 +34,7 @@ dump_sample();
 
 sub process_file {
         my $fd = shift @_;
-        while(<>) 
+        while(<$fd>) 
         {
                 if ($n < $sampleSize) {
                         push @sample, $_;
