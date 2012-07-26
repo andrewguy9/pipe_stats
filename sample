@@ -8,13 +8,17 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my $sampleSize = 10000;
+my $sampleSize = 0;
 my @sample = ();
 my $n = 0;
 
 my $result = GetOptions(
         "size=i"=> \$sampleSize,
 ) or die usage("Invalid options: $!");
+
+if (not $sampleSize) {
+  die usage("size must be specified");
+}
 
 if (@ARGV) {
         for my $file (@ARGV) {
