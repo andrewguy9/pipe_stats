@@ -27,7 +27,8 @@ if (@ARGV) {
                 close $fd;
         }
 } else {
-        process_file($STDIN);
+        open my $stdin_fd, "/dev/stdin" or die ("unable to open stdin");
+        process_file($stdin_fd);
 }
 
 sub process_file {
