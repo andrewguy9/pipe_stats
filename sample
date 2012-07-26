@@ -30,6 +30,7 @@ if (@ARGV) {
         open my $stdin_fd, "/dev/stdin" or die ("unable to open stdin");
         process_file($stdin_fd);
 }
+dump_sample();
 
 sub process_file {
         my $fd = shift @_;
@@ -45,9 +46,6 @@ sub process_file {
                 }
                 $n++;
         }
-        for my $line (@sample) {
-                print $line;
-        }
 }
 
 sub usage {
@@ -59,4 +57,9 @@ sub usage {
         print STDERR "If no files are specified, reads from stdin\n";
 }
 
+sub dump_sample {
+        for my $line (@sample) {
+                print $line;
+        }
+}
 
