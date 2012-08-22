@@ -39,11 +39,11 @@ while(1) {
 
                 if (! $inodes{$filename} or $inode != $inodes{$filename}) {
                         # The inode changed
-                        print STDERR "File $filename changed\n";
+                        print STDERR "File $filename changed\n" if $verbose;
                         push @changed_files, $filename;
                 } elsif (not $sizes{$filename} or $size < $sizes{$filename}) {
                         # The file was truncated, dont read at all.
-                        print STDERR "File $filename was truncated\n";
+                        print STDERR "File $filename was truncated\n" if $verbose;
                         push @changed_files, $filename;
                         close_name($filename);
                 }
@@ -57,7 +57,7 @@ while(1) {
 
                 while(<$fd>) {
                         my $line = $_;
-                        print $_;
+                        print $line;
                 }
         }
 
