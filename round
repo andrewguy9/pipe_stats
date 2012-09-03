@@ -13,14 +13,30 @@ use List::Util qw[min max];
 
 my $step = 1;
 
+my $floor;
+my $ceil;
+my $round;
+
 my $result = GetOptions(
+  "floor" => \$floor,
+  "ceil" => \$ceil,
+  "round" => \$round,
 ) or die usage("Invalid input: $!");
 
 while(<>) {
   my $line = $_;
   chomp $line;
   my $num = $line;
-  my $result = round($num, 1);
+  my $result;
+  if ($floor) {
+    $result = round($num, 1);
+  } elsif ($ceil) {
+    $result = ceil($num, 1);
+  } elsif ($round) {
+    $result = round($num, 1);
+  } else {
+    die usage("Must specify rounding policy");
+  }
   print "$result\n"
 }
 
@@ -37,10 +53,25 @@ sub round {
     }
 }
 
+sub floor {
+  my $num = shift;
+  my $base = shift;
+
+  my $mult = int($num / $base);
+  return $base * $mult;
+}
+
+sub ceil {
+  my $num = shift;
+  my $base = shift;
+
+  my $mult = int($num / $base);
+  return $base * ($mult+1);
+}
+
 sub usage {
   my $msg = shift @_;
   print STDERR "$msg\n";
-  print STDERR "round [--step n]\n";
-  print STDERR "Consumes stream of the format\n";
-  print STDERR "number\n..."
+  print STDERR "round [--floor] [--ceil] [--round]\n";
+  print STDERR "Consumes a stream of numbers\n"
 }
