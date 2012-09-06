@@ -1,6 +1,26 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
+use Time::Local;
+
+###############################################################################
+################################ STRING LOOKUPS ###############################
+###############################################################################
+
+my %MONTH_TO_NUM = (
+  'Jan' => 1,
+  'Feb' => 2,
+  'Mar' => 3,
+  'Apr' => 4,
+  'May' => 5,
+  'Jun' => 6,
+  'Jul' => 7,
+  'Aug' => 8,
+  'Sep' => 9,
+  'Oct' => 10,
+  'Nov' => 11,
+  'Dec' => 12,
+);
 
 ###############################################################################
 ################################# DATE FORMATS ################################
@@ -26,8 +46,8 @@ my %mdt_format = (
 my $mdyt_date = "07/30/12 00:33:35 ";
 my %mdyt_format = (
   regex => '^(\d\d)/(\d\d)/(\d\d) (\d\d):(\d\d):(\d\d)\s',
-  year => 3,
-  yoc => 0,
+  year => 0,
+  yoc => 3,
   month => 1,
   dow => 0,
   dom => 2,
@@ -133,7 +153,48 @@ sub parse_string
   return $parts;
 }
 
-sub get_local_time_parts 
+sub destring_parts
+{
+  my $parts = shift;
+
+  $parts->{month} = $MONTH_TO_NUM{$parts->{month}} if $MONTH_TO_NUM{$parts->{month}};
+
+  return $parts;
+}
+
+sub normalize_year
+{
+  my $parts = shift;
+  if (defined $parts->{yoc} and not defined $parts->{year}) {
+    $parts->{year} = $parts->{yoc} + 2000;
+  }
+
+  return $parts;
+}
+
+sub normalize_parts
+{
+  my $parts = shift;
+
+  destring_parts($parts);
+  normalize_year($parts);
+
+  return $parts;
+}
+
+sub get_normalized_parts 
+{
+  my $str = shift;
+
+  my $parts = parse_string($str);
+  if (defined $parts) {
+    normalize_parts($parts);
+  }
+
+  return $parts;
+}
+
+sub localtime_parts 
 {
   (my $sec, my $min, my $hour, my $dom, my $month, my $year, my $dow, my $doy, my $daylight) = localtime();
 
@@ -155,6 +216,36 @@ sub get_local_time_parts
   return \%parts;
 }
 
+sub parts2localtime
+{
+  my $parts = shift;
+
+  my @used = (
+    $parts->{sec},
+    $parts->{min},
+    $parts->{hour},
+    $parts->{dom},
+    $parts->{month},
+    $parts->{year},
+  );
+
+  for my $part (@used) {
+    if (not defined $part) {
+      print "-\n";
+      return undef;
+    } else {
+      print "+";
+    }
+  }
+  print "\n";
+  my $epoch = timelocal( @used );
+
+  #$epoch += $parts->{sub_sec}; #TODO DEAL WITH SUB_SEC.
+
+  print "Actually got an epoch $epoch\n";
+  return $epoch;
+}
+
 ###############################################################################
 ################################ TEST FUNCTIONS ###############################
 ###############################################################################
@@ -174,24 +265,32 @@ sub print_parts
   my $sub_sec = $parts->{sub_sec};
   my $zone    = $parts->{zone};
 
-  print "Year    '$year'\n" if $year;
-  print "YOC     '$yoc'\n" if $yoc;
-  print "Month   '$month'\n" if $month;
-  print "Week    '$dow'\n" if $dow;
-  print "Day     '$dom'\n" if $dom;
-  print "Hour    '$hour'\n" if $hour;
-  print "Min     '$min'\n" if $min;
-  print "Sec     '$sec'\n" if $sec;
-  print "Sub_sec '$sub_sec'\n" if $sub_sec;
-  print "Zone    '$zone'\n" if $zone;
+  print "Year    '$year'\n"     if $year;
+  print "YOC     '$yoc'\n"      if $yoc;
+  print "Month   '$month'\n"    if $month;
+  print "Week    '$dow'\n"      if $dow;
+  print "Day     '$dom'\n"      if $dom;
+  print "Hour    '$hour'\n"     if $hour;
+  print "Min     '$min'\n"      if $min;
+  print "Sec     '$sec'\n"      if $sec;
+  print "Sub_sec '$sub_sec'\n"  if $sub_sec;
+  print "Zone    '$zone'\n"     if $zone;
+
+  my $epoch = parts2localtime($parts);
+  if (defined $epoch) {
+    print "Epoch   '$epoch'\n";
+  } else {
+    print "NO EPOCH POSSIBLE\n";
+  }
 
 }
 
 sub test_date {
   my $date = shift;
-  if (my $parts = parse_string($date)) {
+  if (my $parts = get_normalized_parts($date)) {
     print "Date    '$date'\n";
     print_parts($parts);
+
   } else {
     print "Failed to parse\n";
   }
@@ -202,10 +301,11 @@ sub test_date {
 ###############################################################################
 
 for my $date (@test_dates) {
+  print (("-"x80) . "\n");
   test_date($date);
 }
 
-print "****************************************\n";
+print (("*"x80) . "\n");
 
-print_parts( get_local_time_parts() );
+print_parts( localtime_parts() );
 
