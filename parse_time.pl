@@ -22,6 +22,23 @@ my %MONTH_TO_NUM = (
   'Dec' => 12,
 );
 
+my @parts_field_order = (
+  'year',
+  'yoc',
+  'month',
+  'dom',
+  'hour',
+  'min',
+  'sec',
+  'sub_sec',
+);
+
+my %compare_parts_operator = (
+   1    => '>',
+   0    => '=',
+  -1    => '<',
+);
+
 ###############################################################################
 ################################# DATE FORMATS ################################
 ###############################################################################
@@ -162,22 +179,11 @@ sub destring_parts
   return $parts;
 }
 
-sub normalize_year
-{
-  my $parts = shift;
-  if (defined $parts->{yoc} and not defined $parts->{year}) {
-    $parts->{year} = $parts->{yoc} + 2000;
-  }
-
-  return $parts;
-}
-
 sub normalize_parts
 {
   my $parts = shift;
 
   destring_parts($parts);
-  normalize_year($parts);
 
   return $parts;
 }
@@ -246,6 +252,33 @@ sub parts2localtime
   return $epoch;
 }
 
+sub compare_parts 
+{
+  my $a = shift;
+  my $b = shift;
+
+  for my $field (@parts_field_order) {
+    # if the field is defined, both should be defined.
+    if ((defined $a->{$field}) ^ (defined $b->{$field})) {
+      return undef;
+    }
+
+    if ((defined $a->{$field}) && (defined $b->{$field})) {
+      #both are defined, which is less.
+      if ($a->{$field} > $b->{$field}) {
+        return 1;
+      } elsif ($a->{$field} < $b->{$field}) {
+        return -1;
+      }
+    } else {
+      next;
+    }
+  }
+
+  # If we get here the two timestamps are equal.
+  return 0;
+}
+
 ###############################################################################
 ################################ TEST FUNCTIONS ###############################
 ###############################################################################
@@ -296,6 +329,23 @@ sub test_date {
   }
 }
 
+sub print_compare_dates {
+  my $a = shift;
+  my $b = shift;
+
+  my $a_parts = get_normalized_parts($a);
+  my $b_parts = get_normalized_parts($b);
+
+  my $comp = compare_parts($a_parts, $b_parts);
+
+  if (defined $comp) {
+    my $operator = $compare_parts_operator{$comp};
+    print "$a  $operator  $b\n";
+  } else {
+    print "$a  !  $b\n";
+  }
+}
+
 ###############################################################################
 ################################## TEST CODE ##################################
 ###############################################################################
@@ -308,4 +358,12 @@ for my $date (@test_dates) {
 print (("*"x80) . "\n");
 
 print_parts( localtime_parts() );
+
+print (("*"x80) . "\n");
+
+for my $a (@test_dates) {
+  for my $b (@test_dates) {
+    print_compare_dates($a, $b);
+  }
+}
 
