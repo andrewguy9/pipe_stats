@@ -1,65 +1,22 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
 
-#
-# Produces a representative sample from a stream of undetermined length.
-#
+import sys
+import os
+import argparse
+import sample
 
-use strict;
-use warnings;
-use Getopt::Long;
+parser = argparse.ArgumentParser(description = 'Produces a representative sample from a stream of undetermined length.')
+parser.add_argument('--size', type=int, dest='sampleSize', action='store', required=True, help='sample of size')
+parser.add_argument('files', nargs='*', default=['/dev/stdin'], help='list of files to read. If no files are specified, reads from stdin')
+args = parser.parse_args()
 
-my $sampleSize = 0;
-my @sample = ();
-my $n = 0;
+s = sample.ReservoirSample(args.sampleSize)
 
-my $result = GetOptions(
-        "size=i"=> \$sampleSize,
-) or die usage("Invalid options: $!");
-
-if (not $sampleSize) {
-  die usage("size must be specified");
-}
-
-if (@ARGV) {
-        for my $file (@ARGV) {
-                open my $fd, $file or next;
-                process_file($fd);
-                close $fd;
-        }
-} else {
-        open my $stdin_fd, "/dev/stdin" or die ("unable to open stdin");
-        process_file($stdin_fd);
-}
-dump_sample();
-
-sub process_file {
-        my $fd = shift @_;
-        while(<$fd>) 
-        {
-                if ($n < $sampleSize) {
-                        push @sample, $_;
-                } else {
-                        my $index = int(rand($n));
-                        if ($index < $sampleSize) {
-                                $sample[ $index ] = $_;
-                        }
-                }
-                $n++;
-        }
-}
-
-sub usage {
-        my $msg = shift @_;
-
-        print STDERR "$msg\n";
-        print STDERR "sample [--size n] [files...]\n";
-        print STDERR "Collects a statistical sample of size n\n";
-        print STDERR "If no files are specified, reads from stdin\n";
-}
-
-sub dump_sample {
-        for my $line (@sample) {
-                print $line;
-        }
-}
+for path in args.files:
+  fd = open(path, 'r') or next
+  for line in fd.xreadlines():
+    s.add(line)
+  fd.close()
+for line in s:
+  sys.stdout.write(line)
 
