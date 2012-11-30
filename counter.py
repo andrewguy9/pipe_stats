@@ -40,7 +40,7 @@ class ExponentialMovingAverage:
 # a( t(n) - t(n-1) ) = 1 - exp(-(t(n) - t(n-1))/(W*60))
 # Where time is in seconds and W is the period of time in minutes over which the
 # average is said to be over.
-class AverageOverTime:
+class MovingAverage:
   def __init__(self, period, time_source=time.time):
     self.w = period
     self.ts = time_source
@@ -58,7 +58,7 @@ class AverageOverTime:
     return self.avg.get()
 
 
-class Rate:
+class MovingRate:
   def __init__(self, period, time_source=time.time):
     self.w = period
     self.ts = time_source
