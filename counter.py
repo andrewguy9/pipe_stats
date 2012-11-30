@@ -17,7 +17,7 @@ class CumlativeMovingAverage:
 
 # Exponentially moving average: Returns a moving average where a given data point has
 # less and less impact on the current value as new points come in.
-# alpha is the proportion of the measurement which should be determined 
+# alpha is the proportion of the measurement which should be determined
 # by this datapoint.
 # S(1) = Y(1)
 # S(t) = alpha * Y(t) + (1 - alpha) * S(t-1)
