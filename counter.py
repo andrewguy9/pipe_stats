@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import time
 import math
 
 class CumlativeMovingAverage:
@@ -40,14 +41,16 @@ class ExponentialMovingAverage:
 # Where time is in seconds and W is the period of time in minutes over which the
 # average is said to be over.
 class AverageOverTime:
-  def __init__(self, period, t_now):
+  def __init__(self, period, time_source=time.time):
     self.w = period
-    self.t_now = t_now
+    self.ts = time_source
+    self.t_last = self.ts()
     self.avg = ExponentialMovingAverage()
 
-  def update(self, value, t_now):
-    delta = t_now - self.t_now
-    self.t_now = t_now
+  def update(self, value):
+    t_now = self.ts()
+    delta = t_now - self.t_last
+    self.t_last = t_now
     alpha = 1-math.exp(-delta/self.w)
     return self.avg.update(value, alpha)
 
@@ -56,17 +59,19 @@ class AverageOverTime:
 
 
 class Rate:
-  def __init__(self, period, t_now):
+  def __init__(self, period, time_source=time.time):
     self.w = period
-    self.t_now = t_now
+    self.ts = time_source
+    self.t_last = self.ts()
     self.rate = 0
 
-  def update(self, count, t_now):
-    delta = t_now - self.t_now
-    self.t_now = t_now
+  def update(self, count):
+    t_now = self.ts()
+    delta = t_now - self.t_last
+    self.t_last = t_now
     alpha = math.exp(-delta/self.w)
     self.rate = count + self.rate*alpha
     return self.rate
 
-  def get(self, t_now):
-    return self.update(0, t_now)
+  def get(self):
+    return self.update(0)
