@@ -53,3 +53,20 @@ class AverageOverTime:
 
   def get(self):
     return self.avg.get()
+
+
+class Rate:
+  def __init__(self, period, t_now):
+    self.w = period
+    self.t_now = t_now
+    self.rate = 0
+
+  def update(self, count, t_now):
+    delta = t_now - self.t_now
+    self.t_now = t_now
+    alpha = math.exp(-delta/self.w)
+    self.rate = count + self.rate*alpha
+    return self.rate
+
+  def get(self, t_now):
+    return self.update(0, t_now)
