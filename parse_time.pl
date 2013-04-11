@@ -257,6 +257,7 @@ sub compare_parts
   my $a = shift;
   my $b = shift;
 
+  my $matched = 0;
   for my $field (@parts_field_order) {
     # if the field is defined, both should be defined.
     if ((defined $a->{$field}) ^ (defined $b->{$field})) {
@@ -264,6 +265,7 @@ sub compare_parts
     }
 
     if ((defined $a->{$field}) && (defined $b->{$field})) {
+      $matched = 1;
       #both are defined, which is less.
       if ($a->{$field} > $b->{$field}) {
         return 1;
