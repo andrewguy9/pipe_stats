@@ -1,0 +1,43 @@
+#!/usr/bin/perl
+
+#
+# Repeats some action with some period between runs.
+#
+
+use strict;
+use warnings;
+use Getopt::Long;
+
+my $period = 0;
+my @arguments = ();
+
+my $result = GetOptions(
+        "period=i" => \$period) or die usage("Invalid input $!");
+
+do
+{
+        $result = fire(@ARGV);
+        sleep $period;
+} while(1);
+exit(1);
+
+sub fire {
+        my $pid = fork();
+        if(not defined $pid) {
+                die "Unable for fork!\n"
+        } elsif ($pid == 0) {
+                exec @ARGV;
+        } else {
+                wait;
+        }
+}
+
+sub usage {
+        my $msg = shift @_;
+
+        print STDERR "$msg\n";
+        print STDERR "repeat [--period time] -- program args...\n";
+        print STDERR "Runs program with arguments args repeatedly.\n";
+        print STDERR "Period is time between runs.\n";
+}
+
