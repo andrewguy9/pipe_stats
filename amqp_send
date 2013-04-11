@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+#
+# Reads a set of files or stdin, sending each line to a rabbitmq server.
+#
+
+import sys
+import pika
+import argparse
+
+parser = argparse.ArgumentParser(description = 'Sends lines from stdin or files to an amqp server')
+parser.add_argument('--server', dest='server', action='store', required=True, help='server dns name or ip address')
+parser.add_argument('--queue', dest='queue', action='store', required=True, help='queue to add messages to')
+parser.add_argument('--exchange', dest='exchange', action='store', default='', help='exchange name')
+parser.add_argument('--routing-key', dest='routing_key', action='store', required=True, help='routing_key')
+parser.add_argument('files', nargs='*', default=['/dev/stdin'], help='List of files to read')
+args = parser.parse_args()
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(
+  host=args.server))
+channel = connection.channel()
+channel.queue_declare(queue=args.queue)
+
+for path in args.files:
+  fd = open(path, "r")
+  while 1:
+    line = fd.readline()
+    if not line:
+      break
+    line = line.strip()
+    channel.basic_publish(
+        exchange=args.exchange,
+        routing_key = args.queue,
+        body = line)
+  fd.close()
+connection.close()

@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+#
+# Reads a qmqp queue, printing the contents.
+#
+
+import sys
+import pika
+import argparse
+
+parser = argparse.ArgumentParser(description = 'Reads entries from amqp queue printing the contents.')
+parser.add_argument('--server', dest='server', action='store', required=True, help='server dns name or ip address')
+parser.add_argument('--queue', dest='queue', action='store', required=True, help='queue to add messages to')
+parser.add_argument('files', nargs='*', default=['/dev/stdin'], help='List of files to read')
+args = parser.parse_args()
+
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(
+  host=args.server))
+channel = connection.channel()
+channel.queue_declare(queue=args.queue)
+
+def callback(ch, method, properties, body):
+  print body
+
+channel.basic_consume(callback, queue=args.queue, no_ack=True)
+channel.start_consuming()
+
