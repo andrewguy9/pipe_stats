@@ -9,10 +9,15 @@ use warnings;
 use Getopt::Long;
 
 my $period = 0;
+my $frequency = 0;
 my @arguments = ();
 
 my $result = GetOptions(
-        "period=i" => \$period) or die usage("Invalid input $!");
+        "period=i" => \$period,
+        "frequency=i" => \$frequency) or die usage("Invalid input $!");
+if ($frequency != 0) {
+    $period = 1.0 / $frequency;
+}
 
 do
 {
@@ -27,6 +32,7 @@ sub fire {
                 die "Unable for fork!\n"
         } elsif ($pid == 0) {
                 exec @ARGV;
+                die "Unable to exec!\n"
         } else {
                 wait;
         }
