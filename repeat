@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+
+# Victory functions take a command's output.
+# If the function returns true, then we should exit the repeat loop.
+# If false, then we don't have vicotry and should repeat the cmd.
+def until_success_victory(cmd_exit):
+  return int(cmd_exit) == 0
+
+def unless_failure_victory(cmd_exit):
+  return not (int(cmd_exit) == 0)
+
+def repeat_victory(cmd_exit):
+  return False
+
+#repeat [--until-success | --unless-failure] --period PERIOD --max-tries MAX -- command
+parser = argparse.ArgumentParser(description='A script to convert from one time format to another',)
+success_group = parser.add_mutually_exclusive_group()
+success_group.add_argument("--until-success", action='store_const', const=until_success_victory, dest="victory_condition")
+success_group.add_argument("--unless-failure", action='store_const', const=unless_failure_victory, dest="victory_condition")
+parser.add_argument("--period", default=60)
+parser.add_argument("--max-tries", default=10)
+
+def main():
+  try:
+    sep = sys.argv.index("--")
+    cmd_args = sys.argv[sep+1:]
+    sys.argv = sys.argv[:sep]
+  except Exception as e:
+    cmd_args = []
+  args = parser.parse_args()
+  if args.victory_condition is None:
+    args.victory_condition = repeat_victory
+  print args
+  print cmd_args
+
+if __name__ == "__main__":
+    main()
